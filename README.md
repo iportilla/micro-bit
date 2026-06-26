@@ -101,6 +101,8 @@ uflash <file>.py
 | [temperature.py](temperature.py) | Print onboard temperature over serial |
 | [radio_sender.py](radio_sender.py) | Send `"ping"` on button A press |
 | [radio_receiver.py](radio_receiver.py) | Receive `"ping"` and show a checkmark |
+| [genai_sensor_client.py](genai_sensor_client.py) | Send sensor data over serial, scroll back an LLM reply (flash to board) |
+| [genai_host_bridge.py](genai_host_bridge.py) | Host-side script: reads serial, calls Claude API, writes reply back (runs on your computer, not flashed) |
 
 ### Temperature reading over serial
 
@@ -233,6 +235,138 @@ ml.onStart(ml.event.Spin, function () {
 - micro:bit CreateAI: https://createai.microbit.org/
 - AI projects overview: https://microbit.org/ai/
 - CreateAI user guide: https://microbit.org/get-started/user-guide/microbit-createai/
+
+## GenAI / LLM-powered projects
+
+The micro:bit itself has no internet connection and nowhere near enough memory or compute to run a large language model on-device. To bring GenAI into a project, the board acts as the **input/output device** for sensors, buttons, and the LED display, while a **host computer script bridges serial data to a cloud LLM API** (e.g. Claude) and sends the result back.
+
+```mermaid
+flowchart LR
+    subgraph Board[micro:bit]
+        Btn[Button / sensor event] --> Serial1[print over USB serial]
+    end
+    subgraph Host[Host computer - Python]
+        Serial1 -- USB --> Read[Read serial line]
+        Read --> Prompt[Build prompt from sensor event]
+        Prompt --> API[Call LLM API]
+        API --> Response[Get text response]
+        Response --> Send[Write short command over serial]
+    end
+    Send -- USB --> Serial2[uart.readline on board]
+    Serial2 --> Display[display.scroll on LEDs]
+```
+
+### Example: AI mood interpreter
+
+Press a button to "ask" an LLM to interpret a sensor reading (e.g. temperature + light level) and return a short, kid-friendly description, scrolled back on the LED matrix.
+
+```mermaid
+sequenceDiagram
+    participant MB as micro:bit
+    participant Host as Host script (Python)
+    participant LLM as Claude API
+
+    MB->>MB: button_a pressed
+    MB->>MB: read temperature(), light_level()
+    MB->>Host: print("TEMP:23,LIGHT:120") over serial
+    Host->>Host: parse sensor line
+    Host->>LLM: prompt: "Describe this in 4 words: temp=23C, light=120"
+    LLM->>Host: "Warm and cozy room"
+    Host->>MB: write "Warm and cozy room\n" over serial
+    MB->>MB: uart.readline()
+    MB->>MB: display.scroll("Warm and cozy room")
+```
+
+micro:bit side ([genai_sensor_client.py](genai_sensor_client.py)) — collects a sensor reading and sends it over serial, then waits for and scrolls the reply:
+
+```python
+from microbit import *
+
+while True:
+    if button_a.is_pressed():
+        temp = temperature()
+        light = display.read_light_level()
+        print("TEMP:{},LIGHT:{}".format(temp, light))
+
+        reply = uart.read()
+        if reply:
+            display.scroll(str(reply, "utf-8"))
+    sleep(100)
+```
+
+Host side ([genai_host_bridge.py](genai_host_bridge.py)) — reads the serial line, calls an LLM, writes the answer back:
+
+```python
+import serial
+import anthropic
+
+PORT = "/dev/tty.usbmodem1102"  # adjust to your board's serial port
+BAUD = 115200
+
+client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
+ser = serial.Serial(PORT, BAUD, timeout=1)
+
+while True:
+    line = ser.readline().decode("utf-8").strip()
+    if not line.startswith("TEMP:"):
+        continue
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=20,
+        messages=[{
+            "role": "user",
+            "content": f"In 4 words or fewer, describe this room's mood: {line}",
+        }],
+    )
+
+    reply = response.content[0].text.strip()
+    print("LLM:", reply)
+    ser.write((reply + "\n").encode("utf-8"))
+```
+
+```bash
+pip install pyserial anthropic
+export ANTHROPIC_API_KEY="sk-ant-..."
+python genai_host_bridge.py
+```
+
+### Example: AI voice-free chatbot via gestures
+
+Combine [CreateAI](#ai-on-the-microbit) gesture detection with an LLM: each trained gesture (`Wave`, `Nod`, `ShakeHead`) sends a short event label to the host, which asks the LLM to generate a contextual one-line reply (e.g. a joke, a fact, an encouragement) and scrolls it back — turning physical gestures into a conversational interface without any cloud speech recognition on the board itself.
+
+```javascript
+// MakeCode (board side): forward ML gesture events as serial events
+ml.onStart(ml.event.Wave, function () {
+    serial.writeLine("EVENT:wave")
+})
+ml.onStart(ml.event.Nod, function () {
+    serial.writeLine("EVENT:nod")
+})
+```
+
+```python
+# Host side: map gesture events to LLM prompts
+GESTURE_PROMPTS = {
+    "wave": "Say hello in a fun, short way (max 6 words).",
+    "nod": "Give a one-line encouraging compliment (max 6 words).",
+}
+
+line = ser.readline().decode("utf-8").strip()
+if line.startswith("EVENT:"):
+    gesture = line.split(":", 1)[1]
+    prompt = GESTURE_PROMPTS.get(gesture)
+    if prompt:
+        response = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=20,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        reply = response.content[0].text.strip()
+        ser.write((reply + "\n").encode("utf-8"))
+```
+
+> These examples use the [Anthropic Python SDK](https://github.com/anthropics/anthropic-sdk-python) and [pyserial](https://pyserial.readthedocs.io/), but the same pattern works with any LLM API (OpenAI, Gemini, a local Ollama model, etc.) — only the host-side API call changes.
 
 ## Useful links
 
