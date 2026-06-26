@@ -2,6 +2,8 @@
 
 Notes and setup for developing with a BBC micro:bit connected over USB.
 
+> Teaching this in a classroom? See [TEACHER_SETUP.md](TEACHER_SETUP.md) for a configuration and troubleshooting guide aimed at teachers new to IoT devices.
+
 ## What you need
 
 - BBC micro:bit (v1 or v2)
