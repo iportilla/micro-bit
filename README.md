@@ -141,6 +141,39 @@ input.onGesture(Gesture.Shake, function () {
 })
 ```
 
+## Science classroom resources
+
+These are pre-built lessons and reference material from the Micro:bit Educational Foundation, useful if you're using this board for MS/HS science rather than general coding.
+
+### What can the micro:bit measure?
+
+| Sensor | Range | Example projects |
+| --- | --- | --- |
+| Microphone | 0–255 (or decibels, dB) | Sound volume meter, Clap-o-meter |
+| Light sensor (on the LED display) | 0–255 | Energy light meter, Nightlight |
+| Pins | Pressed / not pressed (digital) | Conductivity tester, Evaporation experiment |
+| Magnetometer | microteslas (µT) in MakeCode, nanoteslas (nT) in Python | Simple door alarm, Radio door alarm |
+| Compass | Degrees (°) | Compass North, Sound compass |
+| Accelerometer / movement | milli-g (mG) | Step counter, Animal tracker |
+| Temperature sensor | Degrees Celsius (°C) | Indoor-outdoor thermometer, Insulating heat experiment |
+
+Full poster: https://mbit.io/classroom-resources
+
+### OpenSciEd: sound waves (amplitude & frequency) — two-board activity
+
+A ready-made MS physical science activity pairing with OpenSciEd Unit 8.2 ("How can sound make something move, and how can we produce and detect it?"). Uses **two micro:bits**: one as a tilt-sensor transmitter, one as a receiver, to model how amplitude and frequency affect a wave.
+
+- micro:bit 1 (tilt sensor / transmitter) code: see lesson doc below
+- micro:bit 2 (receiver) code: see lesson doc below
+- Full lesson: https://docs.google.com/document/d/1XU47BhEySOMJrOcP8yyW6tpdDJHS4Gz4SXQvO-qrMPQ/edit
+
+Key takeaways for students: louder sounds have higher amplitude (taller wave peaks/lower troughs), and pitch/frequency (cycles per second) is independent of amplitude — and spreadsheets/data logging can analyze large amounts of wave data quickly. The [radio_sender.py](radio_sender.py) / [radio_receiver.py](radio_receiver.py) pair in this repo demonstrates the same two-board radio mechanic used in this activity.
+
+### Ready-made experiment sets
+
+- **49 science projects** (sunlight sensor, evaporation, thermometer, animal tracker, species counter, indoor-outdoor thermometer, simple door alarm, movement data logger, conductivity tester, sound insulation meter, and more): https://microbit.org/projects
+- **White Rose Science** — 6 experiments with data logging (light, evaporation, sound volume, human circuit, insulating heat panel, solar panel): https://mbit.io/c-wrscience
+
 ## AI on the micro:bit
 
 [micro:bit CreateAI](https://createai.microbit.org/) lets you train a machine learning model from the board's built-in accelerometer data (x/y/z movement), then use it in MakeCode via auto-generated ML blocks. No coding is needed to train the model — you record example movements ("actions"), label them, and CreateAI builds the model for you.
@@ -237,6 +270,17 @@ ml.onStart(ml.event.Spin, function () {
 - micro:bit CreateAI: https://createai.microbit.org/
 - AI projects overview: https://microbit.org/ai/
 - CreateAI user guide: https://microbit.org/get-started/user-guide/microbit-createai/
+
+### CreateAI demo projects (ready to try)
+
+From the Micro:bit Educational Foundation's own CreateAI demos — two micro:bits, two trained models:
+
+- **micro:bit 1 — Duck**: https://mbit.io/sm-caidcuk
+- **micro:bit 2 — Sound mirror**: https://lnkd.in/exHz6PHP
+
+### A note on AI ethics for the classroom
+
+CreateAI is also a hands-on way to teach how human decisions shape ML models, not just the math: in supervised ML, **humans label the training data**, which directly affects what the model learns and how well it works. A good discussion prompt — only a small subset of all possible data is ever recorded and labeled; whose movements/voices were captured, and whose were missed, when *you* trained your model?
 
 ## GenAI / LLM-powered projects
 
@@ -375,3 +419,12 @@ if line.startswith("EVENT:"):
 - MakeCode editor: https://makecode.microbit.org/
 - micro:bit Python docs: https://microbit-micropython.readthedocs.io/
 - Hardware reference: https://tech.microbit.org/hardware/
+- Python editor (browser): https://python.microbit.org/
+
+### Free support (from the Micro:bit Educational Foundation)
+
+1. Help desk: https://support.microbit.org/
+2. Email: info@microbit.org
+3. Feature videos: https://microbit.org/ (search by sensor/feature)
+4. Professional development on specific micro:bit topics: https://microbit.org/teach/
+5. Classroom resources/investigations: https://mbit.io/classroom-resources

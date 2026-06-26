@@ -127,17 +127,39 @@ If you don't want to manage API keys/billing in a classroom setting, treat this 
 | CreateAI / ML lesson doesn't work on a board | Using a micro:bit V1 | Swap for a V2 board — check the back of the board for "V2" printed near the gold connectors |
 | Browser can't connect to the board for CreateAI | Browser not Chrome/Edge, or using a tablet | Switch to Chrome or Edge on a laptop/Chromebook; iPads/iPhones are not supported |
 
-## 9. Safety and classroom management notes
+## 9. Science-specific notes (MS/HS)
+
+If you're running this as a science lab rather than a coding unit, a few things are specific to that use case:
+
+- **Pick the activity by sensor, not by board feature.** The [README's sensor table](README.md#what-can-the-microbit-measure) lists what each sensor actually measures (units and range) and a matching example project — useful for mapping a sensor straight to a standards-aligned lab (e.g. light sensor → energy/light unit, temperature sensor → insulation/heat transfer unit).
+- **The sound-wave activity needs two boards working together**, same as the radio examples in section 6 — budget extra setup time the first time you run it, since pairing/group-number mistakes are the most common failure mode.
+- **Data logging labs (White Rose Science, evaporation/conductivity/sound experiments) write data to the board's internal flash**, which students then download as a `.csv` via the **MY DATA** drive that appears when the board is plugged in — this is a separate drive from the `MICROBIT` programming drive, so tell students not to confuse the two.
+- **If you're discussing AI/ML in class**, CreateAI is also a low-stakes way to teach how human choices (whose movements get recorded, how samples are labeled) shape what a model learns — see the [AI ethics note in the README](README.md#a-note-on-ai-ethics-for-the-classroom) for a discussion prompt.
+
+## 10. Safety and classroom management notes
 
 - micro:bits and USB connections are low-voltage and safe for student use; no special safety equipment is needed.
 - Label boards and cables per student/pair (e.g. nail polish dots or stickers) — boards are easy to mix up and USB cables are easy to lose.
 - Collect boards at the end of class plugged into nothing — leaving them connected to chargers unattended is unnecessary.
 - If using the GenAI examples, **never let students see or enter the API key directly** — keep it in the teacher's environment/terminal only.
 
-## 10. Where to go next
+## 11. Where to go next
 
 - Main project README and code examples: [README.md](README.md)
 - Official curriculum and lesson plans: https://microbit.org/teach/
 - micro:bit CreateAI user guide: https://microbit.org/get-started/user-guide/microbit-createai/
 - MakeCode editor: https://makecode.microbit.org/
 - Python editor (browser): https://python.microbit.org/
+- 49 ready-made science projects: https://microbit.org/projects
+- White Rose Science experiment set (data logging): https://mbit.io/c-wrscience
+- OpenSciEd sound waves two-board activity (lesson doc): https://docs.google.com/document/d/1XU47BhEySOMJrOcP8yyW6tpdDJHS4Gz4SXQvO-qrMPQ/edit
+- micro:bit data measuring poster: https://mbit.io/classroom-resources
+- CreateAI US Pilot Program for grades 4–8 teachers: https://bit.ly/CreateAIpilot
+
+### If you get stuck
+
+1. Help desk: https://support.microbit.org/
+2. Email: info@microbit.org
+3. Feature videos: https://microbit.org/
+4. Professional development on specific topics: https://microbit.org/teach/
+5. Classroom resources/investigations: https://mbit.io/classroom-resources
